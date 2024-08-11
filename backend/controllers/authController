@@ -114,4 +114,4 @@ exports.resetPassword = catchAsyncError(async (req, res, next)=> {
     await data.save({validateBeforeSave: false})
 
     sendToken(data, 201, res)
-})
+}) 
