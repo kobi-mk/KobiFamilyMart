@@ -1,0 +1,117 @@
+const catchAsyncError = require('../middlewares/catchAsyncError')
+const User = require('../models/userModel')
+const ErrorHandler = require('../utils/errorHandler')
+const sendToken = require('../utils/jwt')
+const sendEmail = require('../utils/email')
+const crypto = require('crypto')
+
+//Register -- /register
+exports.registerUser = catchAsyncError(async (req, res, next) => {
+    const {name, email, password, avatar} = req.body
+    const data = await User.create({
+        name,
+        email,
+        password,
+        avatar
+    })
+    sendToken(data, 201, res)
+})
+
+//Login -- /login
+exports.loginUser = catchAsyncError(async (req, res, next)=> {
+    const {email, password} = req.body
+
+    if(!email || !password){
+        return next(new ErrorHandler('Please enter email & password', 400))
+    }
+    
+    //finding the user database
+    const data = await User.findOne({email}).select('+password')
+    //Email checking
+    if(!data){
+        return next(new ErrorHandler('Invalid email or password', 401))
+    }
+    //Password checking
+    if(!await data.isValidPassword(password)){
+        return next(new ErrorHandler('Invalid email or password', 401))
+    }
+    
+    sendToken(data, 201, res)
+})
+
+//Logout -- /logout
+exports.logoutUser = (req, res, next)=> {
+    res.cookie('token', null, {
+       expires: new Date(Date.now()),
+       httpOnly: true
+    })
+    .status(200)
+    .json({
+       success: true,
+       message: "logged-out"
+    })
+}
+
+//Forgot password -- /password/forgot
+exports.forgotPassword = catchAsyncError(async (req, res, next)=> {
+    const data =  await User.findOne({email: req.body.email})
+
+    if(!data){
+        return next(new ErrorHandler('User notfound with this email', 404))
+    }
+
+    const resetToken = data.getResetToken()
+    await data.save({validateBeforeSave: false})
+
+    //Create reset url
+    const resetUrl = `${req.protocol}://${req.get('host')}/password/reset/${resetToken}`
+    const message = `Your password reset url is as follows\n\n${resetUrl}\n\nIf you have not requested this email, then ignore it.`
+
+    try{
+
+        sendEmail({
+            email: data.email,
+            subject: "KobiFamilyMart password recovery",
+            message
+        })
+        res.status(200)
+        .json({
+            success: true,
+            message: `Email send to ${data.email}`
+        })
+
+    }catch(error){
+        data.resetPasswordToken = undefined
+        data.resetPasswordTokenExpired = undefined
+        await data.save({validateBeforeSave: false})
+        return next(new ErrorHandler(error.message, 500))
+    }
+})
+
+//Reset Password -- /password/reset/:token
+exports.resetPassword = catchAsyncError(async (req, res, next)=> {
+    const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
+
+    const data = await User.findOne({
+        resetPasswordToken,
+        resetPasswordTokenExpired: {
+            $gt : Date.now()
+        }
+    })
+
+    if(!data){
+        return next(new ErrorHandler('Password reset token is invalid or expired'))
+    }
+
+    if(req.body.password !== req.body.confirmPassword){
+        return next(new ErrorHandler('Password does not match'))
+    }
+
+    data.password = req.body.password
+    data.resetPasswordToken = undefined
+    data.resetPasswordTokenExpired = undefined
+
+    await data.save({validateBeforeSave: false})
+
+    sendToken(data, 201, res)
+})
