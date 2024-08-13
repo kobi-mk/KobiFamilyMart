@@ -76,10 +76,106 @@ exports.deleteProduct = async (req, res) => {
         });
     }
 
-    await Product.deleteOne(data)
+    await Product.deleteOne(data)   //remove() is deprecated
     
     res.status(200).json({
         success: true,
         message: "Product deleted!"
     }) 
 }
+
+// Create Review -- /review
+exports.createReview = catchAsyncError(async (req, res, next) => {
+    const { productId, rating, comment } = req.body;
+
+    const review = {
+        user: req.user.id,
+        rating: Number(rating), // Convert rating to a number
+        comment
+    };
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+        return next(new ErrorHandler('Product not found', 404));
+    }
+
+    // Check if the user has already reviewed the product
+    const isReviewed = product.reviews.find(review  => review.user.toString() === req.user.id.toString());review
+
+    if (isReviewed) {
+        // Update the existing review
+        product.reviews.forEach(review => {
+            if (review.user.toString() === req.user.id.toString()) {
+                review.comment = comment;
+                review.rating = Number(rating); // Ensure this is a number
+            }
+        });
+    } else {
+        // Add the new review
+        product.reviews.push(review);
+        product.numOfReviews = product.reviews.length;
+    }
+
+    // Calculate the new average rating
+    const totalRating = product.reviews.reduce((acc, review) => acc + Number(review.rating), 0); // Convert to number during reduce
+    const averageRating = totalRating / product.reviews.length;
+
+    product.ratings = isNaN(averageRating) ? 0 : averageRating;
+
+    await product.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+        success: true
+    });
+});
+
+
+//Get Reviews -- /reviews?id={productId}
+exports.getReviews = catchAsyncError(async (req, res, next) =>{
+    const data = await Product.findById(req.query.id)//.populate('reviews.user','name email');
+
+    res.status(200).json({
+        success: true,
+        reviews: data.reviews
+    })
+})
+
+//Delete Review -- /review
+exports.deleteReview = catchAsyncError(async (req, res, next) =>{
+    const product = await Product.findById(req.query.productId);
+    
+    //filtering the reviews which does match the deleting review id
+    const reviews = product.reviews.filter(review => {
+       return review._id.toString() !== req.query.id.toString()
+    });
+    //number of reviews 
+    const numOfReviews = reviews.length;
+
+    //finding the average with the filtered reviews
+    let ratings = reviews.reduce((acc, review) => {
+        return Number(review.rating) + acc;
+    }, 0) / reviews.length;
+    ratings = isNaN(ratings)?0:ratings;
+
+    //save the product document
+    await Product.findByIdAndUpdate(req.query.productId, {
+        reviews,
+        numOfReviews,
+        ratings
+    })
+    res.status(200).json({
+        success: true
+    })
+
+
+});
+
+// get admin products  - api/v1/admin/products
+exports.getAdminProducts = catchAsyncError(async (req, res, next) =>{
+    const products = await Product.find();
+    res.status(200).send({
+        success: true,
+        products
+    })
+});

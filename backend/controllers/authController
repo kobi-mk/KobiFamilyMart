@@ -115,3 +115,96 @@ exports.resetPassword = catchAsyncError(async (req, res, next)=> {
 
     sendToken(data, 201, res)
 }) 
+
+//Get user profile -- /myprofile
+exports.getUserProfile = catchAsyncError(async (req, res, next) =>{
+    const data = await User.findById(req.user.id)
+    res.status(200).json({
+        success: true,
+        data
+    })
+})
+
+//Change password -- /password/change
+exports.changePassword = catchAsyncError(async (req, res, next) =>{
+    const data = await User.findById(req.user.id).select('+password')
+    
+    //check old password
+    if(!await data.isValidPassword(req.body.oldPassword)) {
+        return next(new ErrorHandler('Old password is incorrect', 401))
+    }
+    //assigning new password
+    data.password = req.body.password
+    await data.save()
+    res.status(200).json({
+        success: true
+    })
+})
+
+//Update profile -- 
+exports.updateProfile = catchAsyncError(async (req, res, next) =>{
+    const newUserData = {
+        name: req.body.name,
+        email: req.body.email
+    }
+    const data = await User.findByIdAndUpdate(req.user.id, newUserData, {
+        new: true,
+        runValidators: true
+    })
+    res.status(200).json({
+        success: true,
+        data
+    })
+})
+
+// Admin: Get all users -- /admin/users
+exports.getAllUsers = catchAsyncError(async (req, res, next) =>{
+    const datas = await User.find()
+    res.status(200).json({
+        success: true,
+        count: Object.keys(datas).length,
+        datas
+    })
+})
+
+// Admin: Get specific users -- 
+exports.getUser = catchAsyncError(async (req, res, next) =>{
+    const data = await User.findById(req.params.id)
+    if(!data) {
+        return next(new ErrorHandler(`User not found with this id ${req.params.id}`, 401))
+    }
+    res.status(200).json({
+        success: true,
+        data
+    })
+})
+
+//Admin: Update user
+
+exports.updateUser = catchAsyncError(async (req, res, next) =>{
+    const newUserData = {
+        name: req.body.name,
+        email: req.body.email,
+        role: req.body.role
+    }
+    const data = await User.findByIdAndUpdate(req.params.id, newUserData, {
+        new: true,
+        runValidators: true
+    })
+    res.status(200).json({
+        success: true,
+        data
+    })
+})
+
+//Admin: Delete user
+exports.deleteUser = catchAsyncError(async (req, res, next) =>{
+    const data = await User.findById(req.params.id)
+    if(!data) {
+        return next(new ErrorHandler(`User not found with this id ${req.params.id}`, 401))
+    }
+    await User.deleteOne(data)   // remove() is deprecated
+    res.status(200).json({
+        success: true
+    })
+})

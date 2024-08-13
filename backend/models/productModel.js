@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema({
         required: [true, "Please enter product description"]
     },
     ratings: {
-        type: String,
+        type: Number,
         default: 0
     },
     images: [
@@ -64,10 +64,7 @@ const productSchema = new mongoose.Schema({
     },
     reviews: [
         {
-            name:{
-                type: String,
-                required: true
-            },
+            user:mongoose.Schema.Types.ObjectId,
             rating: {
                 type: String,
                 required: true
@@ -87,5 +84,5 @@ const productSchema = new mongoose.Schema({
     }
 })
 
-let schema = mongoose.model('Product', productSchema)
-module.exports = schema
+let model = mongoose.model('Product', productSchema)
+module.exports = model

@@ -7,6 +7,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use('/',require('./routes/products'))
 app.use('/',require('./routes/auth'))
+app.use('/',require('./routes/order'))
 app.use(errorMiddleware)
 
 module.exports = app;
