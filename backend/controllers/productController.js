@@ -4,16 +4,31 @@ const catchAsyncError = require('../middlewares/catchAsyncError')
 const APIFeatures = require('../utils/apiFeatures')
 
 //Get Products -- /products
-exports.getProducts = async (req, res, next) =>{
-    const resultsPerPage = 2
-    const apiFeatures = new APIFeatures(Product.find(), req.query).search().filter().paginate(resultsPerPage)
-    const data = await apiFeatures.query;
+exports.getProducts = catchAsyncError(async (req, res, next) =>{
+    const resultsPerPage = 3
+    
+    let buildQuery = () => {
+        return new APIFeatures(Product.find(), req.query).search().filter()
+    }
+    const filteredProductsCount = await buildQuery().query.countDocuments({})
+    const totalProductsCount = await Product.countDocuments({});
+    let productsCount = totalProductsCount;
+
+    if(filteredProductsCount !== totalProductsCount) {
+        productsCount = filteredProductsCount;
+    }
+    const data = await buildQuery().paginate(resultsPerPage).query;
+
+    //await new Promise(resolve => setTimeout(resolve,3000))
+    //return next(new ErrorHandler('Unable to send products!', 400))
+    
     res.status(200).json({
         success: true,
-        count: data.length,
+        count: productsCount,
+        resultsPerPage,
         data
     })
-}
+})
 //Create Products -- /product/new
 exports.newProduct = catchAsyncError(async (req, res, next)=> {
     req.body.user = req.user.id
