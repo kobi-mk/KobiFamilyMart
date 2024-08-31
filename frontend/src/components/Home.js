@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import MetaData from './layouts/MetaData'
 import { useDispatch, useSelector } from 'react-redux'
-import { getProducts } from '../actions/productsAction'
+import { getProducts } from '../actions/productActions'
 import Loader from './layouts/Loader'
 import Product from './product/Product'
 import { toast } from "react-toastify";
@@ -24,7 +24,7 @@ export default function Home() {
             position: toast.POSITION.BOTTOM_CENTER
          })
       }
-      dispatch(getProducts(null, currentPage))
+      dispatch(getProducts(null, null, null, null, currentPage))
    }, [dispatch, error, currentPage])
 
    return (
@@ -37,7 +37,7 @@ export default function Home() {
                <section id="products" className="container mt-5">
                   <div className="row">
                      {products && products.map(product => (
-                        <Product key={product._id} product={product}/>
+                        <Product col={3} key={product._id} product={product}/>
                      ))}
                   </div>
                </section>
