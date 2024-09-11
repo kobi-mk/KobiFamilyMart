@@ -527,6 +527,15 @@ footer {
   background: #fff;
 }
 
+#sidebar ul li div.dropdown-menu a{
+  color: black;
+
+}
+#sidebar ul li div.dropdown-menu a:hover{
+  color: 	#A9A9A9;
+
+}
+
 #sidebar ul li a i {
   margin-right: 0.3rem;
 }

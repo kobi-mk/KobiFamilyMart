@@ -42,7 +42,7 @@ exports.newProduct = catchAsyncError(async (req, res, next)=> {
 
 //Get Single Product  -- /product/:id
 exports.getSingleProduct = catchAsyncError(async (req, res, next) =>{
-    const data = await Product.findById(req.params.id);
+    const data = await Product.findById(req.params.id).populate('reviews.user','name email');
     if(!data){
         return next(new ErrorHandler('Product not found', 400))
     }
@@ -186,7 +186,7 @@ exports.deleteReview = catchAsyncError(async (req, res, next) =>{
 
 });
 
-// get admin products  - api/v1/admin/products
+// get admin products  - /admin/products
 exports.getAdminProducts = catchAsyncError(async (req, res, next) =>{
     const products = await Product.find();
     res.status(200).send({

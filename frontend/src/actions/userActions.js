@@ -14,6 +14,7 @@ import { clearError, loginFail, loginRequest, loginSuccess,
          resetPasswordSuccess,
          resetPasswordFail} from "../slices/authSlice"
 import axios from "axios";
+import { usersFail, usersRequest, usersSuccess } from "../slices/userSlice";
 
 export const login = (email, password) => async (dispatch) => {
     try {
@@ -135,4 +136,16 @@ export const resetPassword = (formData, token) => async (dispatch) => {
     } catch (error) {
         dispatch(resetPasswordFail(error.response.data.message))
     }
+}
+
+export const getUsers =  async (dispatch) => {
+
+    try {
+        dispatch(usersRequest())
+        const { data }  = await axios.get(`/api/v1/admin/users`);
+        dispatch(usersSuccess(data))
+    } catch (error) {
+        dispatch(usersFail(error.response.data.message))
+    }
+
 }
