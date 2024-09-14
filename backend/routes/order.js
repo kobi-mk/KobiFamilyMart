@@ -8,9 +8,9 @@ router.route('/order/:id').get(isAuthenticatedUser, getSingleOrder)
 router.route('/myorders').get(isAuthenticatedUser, myOrders)
 
 //Admin routes
-router.route('/orders').get(isAuthenticatedUser, isAuthorizeRoles('admin'), orders)
-router.route('/order/:id').put(isAuthenticatedUser, isAuthorizeRoles('admin'), updateOrder)
-router.route('/order/:id').delete(isAuthenticatedUser, isAuthorizeRoles('admin'), deleteOrder)
+router.route('/admin/orders').get(isAuthenticatedUser, isAuthorizeRoles('admin'), orders)
+router.route('/admin/order/:id').put(isAuthenticatedUser, isAuthorizeRoles('admin'), updateOrder)
+router.route('/admin/order/:id').delete(isAuthenticatedUser, isAuthorizeRoles('admin'), deleteOrder)
 
 
 module.exports = router 

@@ -21,7 +21,7 @@ const userSlice = createSlice({
             return {
                 ...state,
                 loading: false,
-                users: action.payload.users,
+                users: action.payload.datas,
             }
         },
         usersFail(state, action){
@@ -41,7 +41,7 @@ const userSlice = createSlice({
             return {
                 ...state,
                 loading: false,
-                user: action.payload.user,
+                user: action.payload.data,
             }
         },
         userFail(state, action){

@@ -98,35 +98,6 @@ const productSlice = createSlice({
                 isProductCreated: false
             }
         },
-         // eslint-disable-next-line no-dupe-keys
-         newProductRequest(state, action){
-            return {
-                ...state,
-                loading: true
-            }
-        },
-        newProductSuccess(state, action){
-            return {
-                ...state,
-                loading: false,
-                product: action.payload.product,
-                isProductCreated: true
-            }
-        },
-        newProductFail(state, action){
-            return {
-                ...state,
-                loading: false,
-                error:  action.payload,
-                isProductCreated: false
-            }
-        },
-        clearProductCreated(state, action) {
-            return {
-                ...state,
-                isProductCreated: false
-            }
-        },
         deleteProductRequest(state, action){
             return {
                 ...state,

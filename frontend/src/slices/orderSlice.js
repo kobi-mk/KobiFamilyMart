@@ -89,7 +89,7 @@ const orderSlice = createSlice({
             return {
                 ...state,
                 loading: false,
-                adminOrders: action.payload.orders
+                adminOrders: action.payload.datas
             }
         },
         adminOrdersFail(state, action) {

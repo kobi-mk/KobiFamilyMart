@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-    name:{
+    name : {
         type: String,
-        require: [true, "Please enter product name"],
+        required: [true, "Please enter product name"],
         trim: true,
-        maxLength: [100, "Product name cannot exceed 100 char"]
+        maxLength: [100, "Product name cannot exceed 100 characters"]
     },
     price: {
         type: Number,
@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema({
         required: [true, "Please enter product description"]
     },
     ratings: {
-        type: Number,
+        type: String,
         default: 0
     },
     images: [
@@ -30,14 +30,14 @@ const productSchema = new mongoose.Schema({
     ],
     category: {
         type: String,
-        required: [true, "Please enter product categories"],
+        required: [true, "Please enter product category"],
         enum: {
             values: [
                 'Electronics',
                 'Mobile Phones',
                 'Laptops',
                 'Accessories',
-                'Headphone',
+                'Headphones',
                 'Food',
                 'Books',
                 'Clothes/Shoes',
@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema({
                 'Outdoor',
                 'Home'
             ],
-            message: "Please select correct category"
+            message : "Please select correct category"
         }
     },
     seller: {
@@ -54,18 +54,18 @@ const productSchema = new mongoose.Schema({
         required: [true, "Please enter product seller"]
     },
     stock: {
-        type: String,
+        type: Number,
         required: [true, "Please enter product stock"],
-        maxLength: [20, "Product stock cannot exceed 20"]
+        maxLength: [20, 'Product stock cannot exceed 20']
     },
-     numOfReviews: {
+    numOfReviews: {
         type: Number,
         default: 0
     },
     reviews: [
         {
             user:{
-                type: mongoose.Schema.Types.ObjectId,
+                type:mongoose.Schema.Types.ObjectId,
                 ref: 'User'
             },
             rating: {
@@ -79,13 +79,15 @@ const productSchema = new mongoose.Schema({
         }
     ],
     user: {
-        type: mongoose.Schema.Types.ObjectId
-    },
+        type : mongoose.Schema.Types.ObjectId
+    }
+    ,
     createdAt:{
         type: Date,
         default: Date.now()
     }
 })
 
-let model = mongoose.model('Product', productSchema)
-module.exports = model
+let schema = mongoose.model('Product', productSchema)
+
+module.exports = schema

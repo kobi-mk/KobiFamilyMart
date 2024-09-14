@@ -15,7 +15,7 @@ export default function Dashboard () {
 
     if (products.length > 0) {
         products.forEach( product => {
-            if( product.stock === 0  ) {
+            if(product.stock === 0) {
                 outOfStock = outOfStock + 1;
             }
         })

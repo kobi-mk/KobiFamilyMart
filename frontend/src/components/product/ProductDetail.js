@@ -21,7 +21,7 @@ export default function ProductDetail () {
 
     const increaseQty = () => {
         const count = document.querySelector('.count')
-        if(product.stock ===0 ||  count.valueAsNumber >= product.stock) return;
+        if(product.stock === 0 ||  count.valueAsNumber >= product.stock) return;
         const qty = count.valueAsNumber + 1;
         setQuantity(qty);
     }
@@ -75,7 +75,7 @@ export default function ProductDetail () {
         }
         
 
-    },[dispatch,id,isReviewSubmitted, error])
+    },[dispatch, id, isReviewSubmitted, error])
 
 
 
@@ -112,12 +112,12 @@ export default function ProductDetail () {
                     <div className="stockCounter d-inline">
                         <span className="btn btn-danger minus" onClick={decreaseQty} >-</span>
 
-                        <input type="number" className="form-control count d-inline" value={quantity} readOnly />
+                        <input type="number" className="form-control count d-inline" value={product.stock > 0 ? quantity : product.stock} readOnly />
 
                         <span className="btn btn-primary plus" onClick={increaseQty}>+</span>
                     </div>
                     <button type="button" id="cart_btn" 
-                     disabled={product.stock===0?true:false} 
+                     disabled={product.stock > 0 ?false:true} 
                      onClick={()=>{
                         dispatch(addCartItem(product._id, quantity))
                         toast('Cart Item Added!',{
