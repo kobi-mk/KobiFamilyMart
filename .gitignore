@@ -1,4 +1,4 @@
-# Ignore node_modules in backend and frontend
+# Ignore node_modules at the root and in the frontend
 node_modules/
 frontend/node_modules/
 
