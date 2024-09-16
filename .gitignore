@@ -1,23 +1,57 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Ignore node_modules in both backend and frontend folders
+node_modules
+frontend/node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Ignore .env files for environment variables
+backend/config/.env
+frontend/.env
 
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
+# Ignore logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# Ignore coverage folder used by testing frameworks
+coverage/
+frontend/coverage/
+
+# Ignore DS_Store files (macOS)
+.DS_Store
+
+# Ignore .next folder (Next.js, if you're using it)
+.next/
+frontend/.next/
+
+# Ignore .parcel-cache (if you're using Parcel bundler)
+.parcel-cache/
+frontend/.parcel-cache/
+
+# Ignore Webpack output
+dist/
+frontend/dist/
+
+# Ignore temporary files
+*.swp
+*.swo
+*.bak
+
+# Ignore IDE specific files (optional)
+.vscode/
+.idea/
+*.iml
+
+# Ignore yarn.lock or package-lock.json if not using it
+yarn.lock
+frontend/yarn.lock
+package-lock.json
+frontend/package-lock.json
+
+# Ignore any generated files by npm or yarn
+.pnpm-debug.log*
+.yarn-integrity
+frontend/.yarn-integrity
+.yarnrc.yml
+frontend/.yarnrc.yml
